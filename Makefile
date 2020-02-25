@@ -1,4 +1,4 @@
-BINS = Proj 
+BINS = Proj.exe 
 
 CXX = g++
 CCFLAGS = -O0 -ggdb -std=c++11 
