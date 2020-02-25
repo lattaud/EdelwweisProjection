@@ -12,6 +12,10 @@ int main(int argc, char** argv) {
 	std::string Simu_Type;
 	std::string Fano_factor;
 	std::string Sigma_exp;
+	std::string Run_auto;
+	std::string Verbosity;
+	std::string Name_distrib;
+	Double_t    Tension; 
 	
 	
 	for(int i =1 ; i < argc ; i++){	
@@ -65,6 +69,38 @@ int main(int argc, char** argv) {
 	                        exit(1);
 	                     }
 	                     break;
+	                   case 'T' :
+	                     if(i+1<argc && argv[i+1][0]!='-') {
+	                             Name_distrib = argv[i+1];
+	                     } else {
+	                        cout << "Type of spectrum" << endl;
+	                        exit(1);
+	                     }
+	                     break;
+	                   case 'A' :
+	                     if(i+1<argc && argv[i+1][0]!='-') {
+	                             Run_auto = argv[i+1];
+	                     } else {
+	                        cout << "Auto mode ? : Auto / Remote" << endl;
+	                        exit(1);
+	                     }
+	                     break;
+	                   case 'v' :
+	                     if(i+1<argc && argv[i+1][0]!='-') {
+	                             Verbosity = argv[i+1];
+	                     } else {
+	                        cout << "verbosity mode (expect a boolean)" << endl;
+	                        exit(1);
+	                     }
+	                     break;
+	                   case 't' :
+	                     if(i+1<argc && argv[i+1][0]!='-') {
+	                             Tension = stod(argv[i+1]);
+	                     } else {
+	                        cout << "Tension for luke effect" << endl;
+	                        exit(1);
+	                     }
+	                     break;
 	                   case 'h' :
 	                     std::cout<<" Physics projection program : make sure to have your spectrum ready "<<std::endl;
 	                     std::cout<<"use the following option : "<<std::endl;
@@ -74,6 +110,10 @@ int main(int argc, char** argv) {
 	                     std::cout<<"-P : Probality type for e- pairs creation"<<std::endl;
 	                     std::cout<<"-F : Fano factor    for e- pairs creation"<<std::endl;
 	                     std::cout<<"-R : Experimental E_{phonon} resolution (keV)"<<std::endl;
+	                     std::cout<<"-T : Spectrum type desired"<<std::endl;
+	                     std::cout<<"-A : Is automated"<<std::endl;
+	                     std::cout<<"-v : verbosity mode"<<std::endl;
+	                     std::cout<<"-t : tension for luke effect"<<std::endl;
 	                     exit(0);
 	                  default:
 	                     cout << "unknown command " << argv[i] << " , use the -h command for help" << endl;
@@ -86,11 +126,18 @@ int main(int argc, char** argv) {
 	
 	if(Simu_Type == "MC"){
 	
-	      Int_t NitMC = 10000;
-	      std::cout<<" Enter the desired number of iteration "<<std::endl;
-	      cin>>NitMC;
+	      Int_t NitMC = 100000;
+	      if(Run_auto != "Auto"){
+	         std::cout<<" Enter the desired number of iteration "<<std::endl;
+	         cin>>NitMC;
+	         std::cout<<" Enter the name of the distribution "<<std::endl;
+	         cin>>Name_distrib;
+	         std::cout<<" Enter the desired tension for Luke effect "<<std::endl;
+	         cin>>Tension;
+	      }
 	      
-	      Proj_MC* Proj_instance = new Proj_MC((Input_file).c_str(),(Output_file).c_str(),(Proba_type).c_str(),stod(Sigma_exp),stod(Fano_factor),NitMC);
+	      Proj_MC* Proj_instance = new Proj_MC((Input_file).c_str(),(Output_file).c_str(),(Proba_type).c_str(),stod(Sigma_exp),stod(Fano_factor),  Name_distrib, NitMC, Tension);
+	      Proj_instance->Set_verbosity(Verbosity.c_str());
 	      delete Proj_instance;
 	}
 	

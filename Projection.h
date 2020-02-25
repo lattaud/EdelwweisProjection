@@ -46,18 +46,25 @@ class Proj_MC {
       TF1*          epair_proba;
       TF1*          Input_spectrum;
       std::string   PairsE_type;
+      std::string   Name_spectrum;
       Int_t         N_iteration;
       Double_t      sigma_exp;
       Double_t      fano_factor;
+      bool          Is_verbose;
+      Double_t      Volt;
       
       
       
       
 
    public: 
-      Proj_MC(const std::string &Input_file, const std::string &Output_file, const std::string &Proba_pairs, Double_t sigma_exp ,Double_t Fano_factor,Int_t Niteration );
+      Proj_MC(const std::string &Input_file, const std::string &Output_file, const std::string &Proba_pairs, Double_t sigma_exp ,Double_t Fano_factor, const std::string & Name_distrib,Int_t Niteration, Double_t voltage );
       ~Proj_MC()= default;
       void Init();
+      void Loop_MC();
+      void Write_to_file();
+      void Set_verbosity(const std::string verbosity);
+      Double_t Compute_N_pairs(const std::string Type_proba);
       
 
 };
