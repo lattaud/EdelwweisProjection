@@ -138,6 +138,8 @@ int main(int argc, char** argv) {
 	      
 	      Proj_MC* Proj_instance = new Proj_MC((Input_file).c_str(),(Output_file).c_str(),(Proba_type).c_str(),stod(Sigma_exp),stod(Fano_factor),  Name_distrib, NitMC, Tension);
 	      Proj_instance->Set_verbosity(Verbosity.c_str());
+	      Proj_instance->Init();
+	      Proj_instance->Write_output();
 	      delete Proj_instance;
 	}
 	

@@ -13,6 +13,9 @@ Proj_MC::Proj_MC (const std::string &Input_file, const std::string &Output_file,
    N_iteration      = Niteration;
    Name_spectrum    = Name_distrib;
    Volt             = voltage;
+   Random_instance  = new TRandom3(0);
+   Ep_spectrum      = new TH1D(("Spectrum_"+Name_spectrum+"_Ephonon_smeared").c_str(),("Spectrum_"+Name_spectrum+"_Ephonon_smeared").c_str(),100000,0.,100);
+   Bin_Ep_width = 1./100.;
 
 }
 
@@ -28,36 +31,68 @@ void Proj_MC::Init(){
 
 void Proj_MC::Loop_MC(){
 
+   
    for(int i = 0 ; i < N_iteration ; i++){
    
         Double_t Er = Input_spectrum->GetRandom();
-        Double_t N_epairs = Compute_N_pairs(PairsE_type.c_str());
+        Double_t N_epairs = Compute_N_pairs(PairsE_type.c_str(), Er);
         Double_t Ep  =  Er + N_epairs * Volt ;
-   
+        Ep = Reso_vs_Ep(Ep);
+        Ep_spectrum->Fill(Ep,1./Bin_Ep_width);
+        
    }
 
 }
 
-Double_t Proj_MC::Compute_N_pairs(const std::string Type_proba){
+Int_t Proj_MC::Compute_N_pairs(const std::string Type_proba, Double_t Er){
 
-   if(Type_proba == "Poisson"){
-      Double_t Npairs ;
-      
-      
+   Int_t Npairs ;
+   Double_t epsilon ;
+   if(Name_spectrum=="Gamma") epsilon = 3.;
+   if(Name_spectrum=="Neutron") epsilon = Quenching_function(Er,QUENCHING);      
+   if(Type_proba == "Poisson"){      
+      Random_instance->SetSeed(0);
+      Npairs = Random_instance->Poisson(Er/epsilon);      
       return Npairs;
-   }else{
-   
-      return 1./3.;
+   }else if (Type_proba == "Fano"){
+   // This is probably a biased method. it does not take properly fano into account.                     
+      Npairs = Int_t (Random_instance->Gaus(Er/epsilon,std::sqrt(fano_factor*(Er/epsilon))));      
+      return Npairs;
    }
 
 }
 
+Double_t Proj_MC::Quenching_function(Double_t Er , const std::string type_quenching){
+
+   if(type_quenching == "EDW3") return 0.16* std::pow(Er, 0.18); 
+   if(type_quenching == "Lindart") return 1.; 
+
+
+}
 void Proj_MC::Set_verbosity(const std::string verbosity){
    if( stoi(verbosity) >= 0 && stoi(verbosity) <=1 ) {
       Is_verbose=stoi(verbosity);
    }else{
       Is_verbose=false;
    }
+}
+
+
+Double_t Proj_MC::Reso_vs_Ep(Double_t Ep){
+
+   Double_t Ep_smeared;   
+   Ep_smeared =  Random_instance->Gaus(Ep,std::sqrt(pow(0.04,2)/*+pow(0.02*Ep,2)*/));
+   return Ep_smeared;
+}
+
+void Proj_MC::Write_output(){
+
+
+      Output_file = new TFile("Output_spectrum","RECREATE");
+      Ep_spectrum->Write();      
+      Output_file->Close();
+
+
 }
 
 //All method for Analytics Projection

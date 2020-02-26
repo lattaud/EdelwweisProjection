@@ -32,12 +32,14 @@
 #include "TDirectory.h"
 #include "TGraphErrors.h"
 #include "TParameter.h"
+#include "TRandom.h"
+#include "TRandom3.h"
 
 class Proj_MC {
 
    private: 
-      TGraphErrors* Ep_spectrum;
-      TGraphErrors* Eh_spectrum;
+      TH1D* Ep_spectrum;
+      TH1D* Eh_spectrum;
       TF1* Func_Ep_spectrum;
       TF1* Func_Eh_spectrum;
       TFile*        Output_file;
@@ -52,7 +54,9 @@ class Proj_MC {
       Double_t      fano_factor;
       bool          Is_verbose;
       Double_t      Volt;
-      
+      std::string   QUENCHING = "EDW3";
+      TRandom3 *    Random_instance;
+      Double_t      Bin_Ep_width;
       
       
       
@@ -64,7 +68,10 @@ class Proj_MC {
       void Loop_MC();
       void Write_to_file();
       void Set_verbosity(const std::string verbosity);
-      Double_t Compute_N_pairs(const std::string Type_proba);
+      Int_t Compute_N_pairs(const std::string Type_proba, Double_t Er);
+      Double_t Quenching_function(Double_t Er , const std::string type_quenching);
+      Double_t Reso_vs_Ep(Double_t Ep);
+      void Write_output();
       
 
 };
