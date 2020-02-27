@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 	std::string Verbosity;
 	std::string Name_distrib;
 	Double_t    Tension; 
-	
+	Int_t       N_iteration;
 	
 	for(int i =1 ; i < argc ; i++){	
 	      if(argv[i][0] == '-'){
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
 	
 	if(Simu_Type == "MC"){
 	
-	      Int_t NitMC = 100000;
+	      Int_t NitMC = 1000000;
 	      if(Run_auto != "Auto"){
 	         std::cout<<" Enter the desired number of iteration "<<std::endl;
 	         cin>>NitMC;

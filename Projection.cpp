@@ -88,7 +88,7 @@ Double_t Proj_MC::Reso_vs_Ep(Double_t Ep){
 void Proj_MC::Write_output(){
 
 
-      Output_file = new TFile("Output_spectrum","RECREATE");
+      Output_file = new TFile(Output_file_name.c_str(),"RECREATE");
       Ep_spectrum->Write();      
       Output_file->Close();
 
